@@ -14,7 +14,7 @@ export const productValidation = (product: {
   } = { title: "", description: "", imageUrl: "", price: "" };
 
   function checkURL(url:string) {
-    return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+     return /\.(jpeg|jpg|png|gif)\d*/i.test(url);
 }
 
 const validateImage=checkURL(product.imageUrl)

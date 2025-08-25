@@ -1,14 +1,30 @@
 import { Button } from "@headlessui/react";
 import Cart from "./components/Cart";
 import DialogModel from "./components/Ui/DialogModel";
-import { prodList, formInputList } from "./data";
+import { prodList, formInputList, Colors } from "./data";
 import { useState, type FormEvent } from "react";
 import Input from "./components/Ui/Input";
-import type { Product } from "./interfaces";
+import { type Product } from "./interfaces";
 import { productValidation } from "./validation/index";
 import Error from "./components/Ui/Error";
+import CircleColor from "./components/Ui/CircleColor";
+import { v4 as uuid } from "uuid";
 
 const App = () => {
+  const [products, setProducts] = useState<Product[]>(prodList);
+
+  const [productToEdit, setProductToEdit] = useState<Product>({
+    title: "",
+    description: "",
+    imageUrl: "",
+    price: "",
+    colors: [],
+    category: {
+      name: "",
+      imageUrl: "",
+    },
+  });
+
   const [product, setProduct] = useState<Product>({
     title: "",
     description: "",
@@ -21,12 +37,17 @@ const App = () => {
     },
   });
 
-  const [errors, setErrors] = useState({title: "",
+  const [errors, setErrors] = useState({
+    title: "",
     description: "",
     imageUrl: "",
-    price: "",});
+    price: "",
+  });
+
+  const [tempColors, settempColors] = useState<string[]>([]);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenToEdit, setIsOpenToEdit] = useState(false);
   const closeModal = () => setIsOpen(false);
   const openModal = () => setIsOpen(true);
 
@@ -41,14 +62,32 @@ const App = () => {
 
     console.log(errors);
 
-    const hasErrors=Object.values(errors).some(value=>value==='') && Object.values(errors).every(value=>value==='')
+    const hasErrors =
+      Object.values(errors).some((value) => value === "") &&
+      Object.values(errors).every((value) => value === "");
 
-    if(!hasErrors){
+    if (!hasErrors) {
       setErrors(errors);
-      return ;
+      return;
     }
 
-   
+    setProducts((prev) => [
+      { ...product, id: uuid(), colors: tempColors },
+      ...prev,
+    ]);
+
+    setProduct({
+      title: "",
+      description: "",
+      imageUrl: "",
+      price: "",
+      colors: [],
+      category: {
+        name: "",
+        imageUrl: "",
+      },
+    });
+    settempColors([]);
   };
 
   const onCancel = () => {
@@ -79,11 +118,13 @@ const App = () => {
 
     setErrors({
       ...errors,
-      [name]:''
-    })
+      [name]: "",
+    });
   };
 
-  const renderProducts = prodList.map((product) => (
+ 
+
+  const renderProducts = products.map((product) => (
     <Cart key={product.id} product={product} />
   ));
 
@@ -97,8 +138,22 @@ const App = () => {
         value={product[input.name as keyof Product] as string}
         onChange={onChangeHandler}
       />
-      <Error msg={errors[input.name]}/>
+      <Error msg={errors[input.name]} />
     </div>
+  ));
+
+  const rederColors = Colors.map((color) => (
+    <CircleColor
+      key={color}
+      color={color}
+      onClick={() => {
+        if (tempColors.includes(color)) {
+          settempColors((prev) => prev.filter((item) => item !== color));
+          return;
+        }
+        settempColors((prev) => [...prev, color]);
+      }}
+    />
   ));
 
   return (
@@ -119,7 +174,23 @@ const App = () => {
       >
         <form onSubmit={submitHandler}>
           {renderformInputList}
-          <div className="flex gap-2 mt-2">
+
+          <div className="flex flex-wrap gap-3 mt-2">
+            {" "}
+            {tempColors.map((color) => (
+              <span
+                key={color}
+                className=" flex-row flex-wrap gap-3 mt-2 rounded-md  "
+                style={{ backgroundColor: color }}
+              >
+                {color}
+              </span>
+            ))}{" "}
+          </div>
+
+          <div className="flex flex-wrap gap-3 mt-2">{rederColors}</div>
+
+          <div className="flex gap-2 mt-3">
             <Button
               children={"submit"}
               className={" bg-blue-300 w-full rounded-sm h-10 "}
@@ -133,6 +204,8 @@ const App = () => {
           </div>
         </form>
       </DialogModel>
+
+      
     </main>
   );
 };
