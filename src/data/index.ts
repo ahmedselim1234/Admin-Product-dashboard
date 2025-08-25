@@ -150,7 +150,7 @@ export const prodList: Product[] = [
 export const formInputList:formInputs[] = [
   {
      id: "title",
-      name: "ahmed", 
+      name: "title", 
       label: "Product Title", 
       type: "text"
      },

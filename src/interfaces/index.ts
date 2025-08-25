@@ -13,8 +13,7 @@ export interface Product {
 
 export interface formInputs {
   id: string;
-  name: string;
+  name: "title" | "description" | "imageUrl" | "price";
   label: string;
   type: string;
 }
-
