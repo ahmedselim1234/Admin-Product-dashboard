@@ -46,8 +46,8 @@ const Cart = ({ product }: Iprops) => {
       </div>
 
       <div className="  flex justify-between items-center gap-2 mt-3">
-        <Button children={"Edit"} className=" bg-amber-700" />
-        <Button children={"send"} className={" bg-amber-300"} />
+        <Button children={"Edit"} className=" bg-green-500" />
+        <Button children={"Delete"} className={" bg-red-500"} />
       </div>
     </div>
   );
