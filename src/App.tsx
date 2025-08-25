@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 import Input from "./components/Ui/Input";
 import type { Product } from "./interfaces";
 import { productValidation } from "./validation/index";
+import Error from "./components/Ui/Error";
 
 const App = () => {
   const [product, setProduct] = useState<Product>({
@@ -19,6 +20,11 @@ const App = () => {
       imageUrl: "",
     },
   });
+
+  const [errors, setErrors] = useState({title: "",
+    description: "",
+    imageUrl: "",
+    price: "",});
 
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => setIsOpen(false);
@@ -36,9 +42,12 @@ const App = () => {
     console.log(errors);
 
     const hasErrors=Object.values(errors).some(value=>value==='') && Object.values(errors).every(value=>value==='')
+
     if(!hasErrors){
+      setErrors(errors);
       return ;
     }
+
    
   };
 
@@ -62,10 +71,16 @@ const App = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
+
     setProduct({
       ...product,
       [name]: value,
     });
+
+    setErrors({
+      ...errors,
+      [name]:''
+    })
   };
 
   const renderProducts = prodList.map((product) => (
@@ -82,6 +97,7 @@ const App = () => {
         value={product[input.name as keyof Product] as string}
         onChange={onChangeHandler}
       />
+      <Error msg={errors[input.name]}/>
     </div>
   ));
 
